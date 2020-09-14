@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  variables:
+    HAB_NOCOLORING : false
+    HAB_BLDR_URL : 'https://bldr.habitat.sh/'
+    HAB_ORIGIN : 'sgallagher-public'
+    HAB_LICENSE : accept
+phases:
+  install:
+    commands:
+      - echo [PHASE] Entered the install phase...
+      - apt-get update -y
+      - apt-get install -y curl wget
+      - wget https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh
+      - /bin/bash ./install.sh
+  pre_build:
+    commands:
+      - echo [PHASE] Entered the pre_build phase...
+      - hab license accept
+      - git clone https://github.com/scottpgallagher/chef-buildspec-hab.git
+  build:
+    commands:
+      - echo [PHASE] Entered the build phase...
+      - hab origin key generate sgallagher-public
+      - hab studio build chef-buildspec-hab
+  post_build:
+    commands:
+      - echo [PHASE] Entered the post_build phase...
+      - ls 
+      - hab pkg upload results/sgallagher-public-*.hart
